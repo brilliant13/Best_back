@@ -12,8 +12,11 @@ public class MessageMapper {
                 message.getMessageId(),
                 message.getMember().getId(), // 발송자 ID
                 message.getFriends().getId(), // 수신자 ID
-                message.getText(),
-                message.getCreatedDate()
+                message.getInput_text(),
+                message.getGenerated_text(),
+                message.getSend_at(),
+                message.getStatus(),
+                message.getTone()
         );
     }
 
@@ -23,8 +26,11 @@ public class MessageMapper {
                 messageDto.getMessageId(),
                 member, // Member 객체 설정
                 friends, // Friends 객체 설정
-                messageDto.getText(), // 메시지 내용 설정
-                messageDto.getCreatedDate()
+                messageDto.getInput_text(),
+                messageDto.getGenerated_text(),
+                messageDto.getSend_at(),
+                messageDto.getStatus(),
+                messageDto.getTone()
         );
     }
 }

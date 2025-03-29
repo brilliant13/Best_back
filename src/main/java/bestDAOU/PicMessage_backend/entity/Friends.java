@@ -26,14 +26,16 @@ public class Friends {
     private String friendPhone;
 
     @Column
+    private String friendEmail;
+
+    @Column
     private String tags; // 태그 문자열
 
     @Column
     private String memos; // 메모 문자열
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private List<Tone> tones = new ArrayList<>(); // 어조 리스트 (enum형)
+    @Column
+    private String  tones; // 어조 문자열
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
