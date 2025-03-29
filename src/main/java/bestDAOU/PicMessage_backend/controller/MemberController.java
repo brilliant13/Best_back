@@ -1,6 +1,5 @@
 package bestDAOU.PicMessage_backend.controller;
 
-import bestDAOU.PicMessage_backend.dto.CreateMemberDto;
 import bestDAOU.PicMessage_backend.dto.MemberDto;
 import bestDAOU.PicMessage_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +35,8 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<MemberDto> createMember(
             @Parameter(description = "등록할 회원 정보", required = true)
-            @RequestBody CreateMemberDto createMemberDto) {
-        MemberDto savedMember = memberService.createMember(createMemberDto);
+            @RequestBody MemberDto memberDto) {
+        MemberDto savedMember = memberService.createMember(memberDto);
         return new ResponseEntity<>(savedMember, HttpStatus.CREATED);
     }
 
