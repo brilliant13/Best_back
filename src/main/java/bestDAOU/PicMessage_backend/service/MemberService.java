@@ -10,4 +10,5 @@ public interface MemberService {
     MemberDto updateMember(Long memberId, MemberDto memberDto);
     void deleteMember(Long memberId);
     List<MemberDto> getAllMembers();
+    MemberDto login(String email, String password);
 }
