@@ -14,7 +14,8 @@ public class MemberMapper {
                 member.getId(),
                 member.getName(),
                 member.getPassword(),
-                member.getEmail()
+                member.getEmail(),
+                member.getPhone()
         );
     }
 
@@ -24,7 +25,8 @@ public class MemberMapper {
                 memberDto.getId(),
                 memberDto.getName(),
                 memberDto.getPassword(),
-                memberDto.getEmail()
+                memberDto.getEmail(),
+                memberDto.getPhone()
         );
 
         return member;

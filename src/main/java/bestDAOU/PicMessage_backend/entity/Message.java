@@ -29,11 +29,22 @@ public class Message {
     @JoinColumn(name = "friend_id", nullable = false)
     private Friends friends; // 수신자
 
-    @Column(nullable = false)
-    private String text; // 메시지 내용
+    @Column
+    private String input_text; // 사용자가 요청한 문자 내용
+
+    @Column
+    private String generated_text; // AI가 생성한 문자 내용
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdDate; // 생성일자
+    private LocalDateTime send_at; // 문자 전송 시간
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MessageStatus  status; // 문자 전송 상태
+
+    @Column
+    private String tone; // 사용한 말투
+
 
 }
