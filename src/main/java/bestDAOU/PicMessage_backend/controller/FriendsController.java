@@ -1,52 +1,64 @@
 package bestDAOU.PicMessage_backend.controller;
 
+import bestDAOU.PicMessage_backend.apiPayload.ApiResponse;
 import bestDAOU.PicMessage_backend.dto.FriendsDto;
 import bestDAOU.PicMessage_backend.service.FriendsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin("*")
+@Tag(name = "Friends", description = "친구 관련 API")
 @RestController
 @RequestMapping("/api/friends")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class FriendsController {
 
     @Autowired
     private FriendsService friendsService;
 
+    @Operation(summary = "친구 등록 API", description = "특정 회원의 친구를 등록하는 API입니다.")
     @PostMapping("/member/{memberId}")
-    public ResponseEntity<FriendsDto> addFriend(@PathVariable Long memberId,
-                                                @RequestBody FriendsDto friendsDto) {
+    public ApiResponse<FriendsDto> addFriend(
+            @Parameter(description = "친구를 등록할 회원 ID", required = true) @PathVariable Long memberId,
+            @RequestBody FriendsDto friendsDto) {
         FriendsDto savedFriend = friendsService.addFriend(friendsDto, memberId);
-        return new ResponseEntity<>(savedFriend, HttpStatus.CREATED);
+        return ApiResponse.onSuccess(savedFriend, "친구가 성공적으로 등록되었습니다.");
     }
 
+    @Operation(summary = "친구 조회 API", description = "친구 ID로 친구 정보를 조회하는 API입니다.")
     @GetMapping("{id}")
-    public ResponseEntity<FriendsDto> getFriendById(@PathVariable("id") Long friendId) {
+    public ApiResponse<FriendsDto> getFriendById(
+            @Parameter(description = "조회할 친구 ID", required = true) @PathVariable("id") Long friendId) {
         FriendsDto friendDto = friendsService.getFriendById(friendId);
-        return ResponseEntity.ok(friendDto);
+        return ApiResponse.onSuccess(friendDto);
     }
 
+    @Operation(summary = "회원별 친구 목록 조회 API", description = "회원 ID로 해당 회원의 모든 친구를 조회하는 API입니다.")
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<FriendsDto>> getFriendsByMemberId(@PathVariable("memberId") Long memberId) {
+    public ApiResponse<List<FriendsDto>> getFriendsByMemberId(
+            @Parameter(description = "회원 ID", required = true) @PathVariable("memberId") Long memberId) {
         List<FriendsDto> friends = friendsService.getFriendsByMemberId(memberId);
-        return ResponseEntity.ok(friends);
+        return ApiResponse.onSuccess(friends);
     }
 
+    @Operation(summary = "친구 정보 수정 API", description = "친구 정보를 수정하는 API입니다.")
     @PatchMapping("{id}")
-    public ResponseEntity<FriendsDto> updateFriend(@PathVariable Long id,
-                                                   @RequestBody FriendsDto friendsDto) {
+    public ApiResponse<FriendsDto> updateFriend(
+            @Parameter(description = "수정할 친구 ID", required = true) @PathVariable Long id,
+            @RequestBody FriendsDto friendsDto) {
         FriendsDto updatedFriend = friendsService.updateFriend(id, friendsDto);
-        return ResponseEntity.ok(updatedFriend);
+        return ApiResponse.onSuccess(updatedFriend, "친구 정보가 성공적으로 수정되었습니다.");
     }
 
+    @Operation(summary = "친구 삭제 API", description = "친구 정보를 삭제하는 API입니다.")
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteFriend(@PathVariable("id") Long friendId) {
+    public ApiResponse<String> deleteFriend(
+            @Parameter(description = "삭제할 친구 ID", required = true) @PathVariable("id") Long friendId) {
         friendsService.deleteFriend(friendId);
-        return ResponseEntity.ok("Friend deleted successfully.");
+        return ApiResponse.onSuccess("친구가 성공적으로 삭제되었습니다.");
     }
-
 }
