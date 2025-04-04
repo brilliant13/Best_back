@@ -19,7 +19,7 @@ public class FriendsDto {
     private String friendName;
     private String friendPhone;
     private String friendEmail;
-    private String tags; // 태그 문자열
+    private String features; // 태그 문자열
     private String memos; // 메모 문자열
     private String tones; // 어조
     private Long member_id; // Member와 다대일 관계 설정

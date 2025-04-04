@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.beans.ConstructorProperties;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class Friends {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "friend_id")
     private Long id;
 
     @Column(nullable = false)
@@ -29,7 +31,7 @@ public class Friends {
     private String friendEmail;
 
     @Column
-    private String tags; // 태그 문자열
+    private String features; // 특징 문자열
 
     @Column
     private String memos; // 메모 문자열

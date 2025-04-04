@@ -53,7 +53,7 @@ public class FriendsServiceImpl implements FriendsService {
         // 기존 정보를 업데이트
         friend.setFriendName(friendsDto.getFriendName()); // 친구 이름 업데이트
         friend.setFriendPhone(friendsDto.getFriendPhone()); // 친구 전화번호 업데이트
-        friend.setTags(friendsDto.getTags()); // 태그 업데이트
+        friend.setFeatures(friendsDto.getFeatures()); // 태그 업데이트
         friend.setMemos(friendsDto.getMemos()); // 메모 업데이트
         friend.setTones(friendsDto.getTones()); // 어조 리스트 업데이트
         friend.setRelationType(friendsDto.getRelationType()); // 관계 유형 업데이트
