@@ -1,6 +1,5 @@
 package bestDAOU.PicMessage_backend.service.impl;
 
-import bestDAOU.PicMessage_backend.dto.CreateMemberDto;
 import bestDAOU.PicMessage_backend.dto.MemberDto;
 import bestDAOU.PicMessage_backend.entity.Member;
 import bestDAOU.PicMessage_backend.exception.ResourceNotFoundException;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,12 +20,13 @@ public class MemberServiceImpl implements MemberService {
     private MemberRepository memberRepository;
 
     @Override
-    public MemberDto createMember(CreateMemberDto createMemberDto) {
+    public MemberDto createMember(MemberDto memberDto) {
         // CreateMemberDto에서 Member 엔티티로 변환
         Member member = new Member();
-        member.setName(createMemberDto.getName());
-        member.setPassword(createMemberDto.getPassword());
-        member.setEmail(createMemberDto.getEmail());
+        member.setName(memberDto.getName());
+        member.setPassword(memberDto.getPassword());
+        member.setEmail(memberDto.getEmail());
+        member.setPhone(memberDto.getPhone());
 
         // 회원 저장
         Member savedMember = memberRepository.save(member);
@@ -63,4 +64,10 @@ public class MemberServiceImpl implements MemberService {
                 .map(MemberMapper::mapToMemberDto)
                 .collect(Collectors.toList());
     }
+    @Override
+    public MemberDto login(String email, String password) {
+        Optional<Member> optionalMember = memberRepository.findByEmailAndPassword(email, password);
+        return optionalMember.map(MemberMapper::mapToMemberDto).orElse(null);
+    }
+
 }

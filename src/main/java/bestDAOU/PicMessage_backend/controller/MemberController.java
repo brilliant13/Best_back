@@ -1,6 +1,5 @@
 package bestDAOU.PicMessage_backend.controller;
 
-import bestDAOU.PicMessage_backend.dto.CreateMemberDto;
 import bestDAOU.PicMessage_backend.dto.MemberDto;
 import bestDAOU.PicMessage_backend.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +35,10 @@ public class MemberController {
     @PostMapping
     public ResponseEntity<MemberDto> createMember(
             @Parameter(description = "등록할 회원 정보", required = true)
-            @RequestBody CreateMemberDto createMemberDto) {
-        MemberDto savedMember = memberService.createMember(createMemberDto);
+            @RequestBody MemberDto memberDto) {
+        System.out.println("memberDto = " + memberDto);
+        MemberDto savedMember = memberService.createMember(memberDto);
+        System.out.println("savedMember = " + savedMember);
         return new ResponseEntity<>(savedMember, HttpStatus.CREATED);
     }
 
@@ -92,5 +93,21 @@ public class MemberController {
     public ResponseEntity<List<MemberDto>> getAllMembers() {
         List<MemberDto> members = memberService.getAllMembers();
         return ResponseEntity.ok(members);
+    }
+
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 오류")
+    })
+    @PostMapping("/login")
+    public ResponseEntity<MemberDto> loginMember(
+            @RequestBody MemberDto loginDto) {
+        MemberDto member = memberService.login(loginDto.getEmail(), loginDto.getPassword());
+        if (member != null) {
+            return ResponseEntity.ok(member);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }

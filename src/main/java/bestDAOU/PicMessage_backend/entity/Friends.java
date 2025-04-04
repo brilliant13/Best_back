@@ -29,7 +29,7 @@ public class Friends {
     private String friendEmail;
 
     @Column
-    private String tags; // 태그 문자열 // 특징
+    private String features; // 특징 문자열
 
     @Column
     private String memos; // 메모 문자열

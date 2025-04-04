@@ -13,7 +13,7 @@ public class FriendsMapper {
                 friends.getFriendName(),
                 friends.getFriendPhone(),
                 friends.getFriendEmail(),
-                friends.getTags(),
+                friends.getFeatures(),
                 friends.getMemos(),
                 friends.getTones(),
                 friends.getMember().getId(), // Member의 ID를 직접 설정
@@ -29,7 +29,7 @@ public class FriendsMapper {
                 friendsDto.getFriendName(),
                 friendsDto.getFriendPhone(),
                 friendsDto.getFriendEmail(),
-                friendsDto.getTags(),
+                friendsDto.getFeatures(),
                 friendsDto.getMemos(),
                 friendsDto.getTones(),
                 member, // Member 엔티티를 직접 설정
