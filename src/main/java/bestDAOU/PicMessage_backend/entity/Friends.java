@@ -17,6 +17,7 @@ import java.util.List;
 public class Friends {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "friend_id") //id -> friend_id
     private Long id;
 
     @Column(nullable = false)
