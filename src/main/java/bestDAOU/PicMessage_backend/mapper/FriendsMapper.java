@@ -16,6 +16,7 @@ public class FriendsMapper {
                 friends.getFeatures(),
                 friends.getMemos(),
                 friends.getTones(),
+                friends.getTones_prompt(),
                 friends.getMember().getId(), // Member의 ID를 직접 설정
                 friends.getRelationType(),
                 friends.getGroupName()
@@ -24,17 +25,18 @@ public class FriendsMapper {
 
     // FriendsDto -> Friends 엔티티로 매핑
     public static Friends mapToFriends(FriendsDto friendsDto, Member member) {
-        return new Friends(
-                friendsDto.getId(),
-                friendsDto.getFriendName(),
-                friendsDto.getFriendPhone(),
-                friendsDto.getFriendEmail(),
-                friendsDto.getFeatures(),
-                friendsDto.getMemos(),
-                friendsDto.getTones(),
-                member, // Member 엔티티를 직접 설정
-                friendsDto.getRelationType(),
-                friendsDto.getGroupName()
-        );
+        Friends friends = new Friends();
+        friends.setId(friendsDto.getId());
+        friends.setFriendName(friendsDto.getFriendName());
+        friends.setFriendPhone(friendsDto.getFriendPhone());
+        friends.setFriendEmail(friendsDto.getFriendEmail());
+        friends.setFeatures(friendsDto.getFeatures());
+        friends.setMemos(friendsDto.getMemos());
+        friends.setTones(friendsDto.getTones());
+        friends.setTones_prompt(friendsDto.getTones_prompt());
+        friends.setMember(member); // Member 엔티티를 직접 설정
+        friends.setRelationType(friendsDto.getRelationType());
+        friends.setGroupName(friendsDto.getGroupName());
+        return friends;
     }
 }

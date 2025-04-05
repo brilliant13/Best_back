@@ -56,6 +56,7 @@ public class FriendsServiceImpl implements FriendsService {
         friend.setFeatures(friendsDto.getFeatures()); // 태그 업데이트
         friend.setMemos(friendsDto.getMemos()); // 메모 업데이트
         friend.setTones(friendsDto.getTones()); // 어조 리스트 업데이트
+        friend.setTones_prompt(friendsDto.getTones_prompt()); // 말투 프롬프트 JSON 업데이트
         friend.setRelationType(friendsDto.getRelationType()); // 관계 유형 업데이트
         friend.setGroupName(friendsDto.getGroupName()); // 그룹명 업데이트
 
