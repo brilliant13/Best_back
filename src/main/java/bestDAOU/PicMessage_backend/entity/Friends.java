@@ -38,6 +38,9 @@ public class Friends {
     @Column
     private String  tones; // 어조 문자열
 
+    @Column(columnDefinition = "TEXT")
+    private String tones_prompt; // 말투 프롬프트 JSON 전체
+
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member; // Member와 다대일 관계 설정
