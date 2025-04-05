@@ -25,6 +25,8 @@ public class FriendsController {
     public ApiResponse<FriendsDto> addFriend(
             @Parameter(description = "친구를 등록할 회원 ID", required = true) @PathVariable Long memberId,
             @RequestBody FriendsDto friendsDto) {
+        // 새 친구 추가 시 ID를 명시적으로 null로 설정
+        friendsDto.setId(null);
         FriendsDto savedFriend = friendsService.addFriend(friendsDto, memberId);
         return ApiResponse.onSuccess(savedFriend, "친구가 성공적으로 등록되었습니다.");
     }
