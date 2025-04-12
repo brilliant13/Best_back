@@ -1,14 +1,10 @@
 package bestDAOU.PicMessage_backend.dto;
 
 import bestDAOU.PicMessage_backend.entity.RelationType;
-import bestDAOU.PicMessage_backend.entity.Tone;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Setter
 @Getter
