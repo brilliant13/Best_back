@@ -7,7 +7,9 @@ import bestDAOU.PicMessage_backend.mapper.MemberMapper;
 import bestDAOU.PicMessage_backend.repository.MemberRepository;
 import bestDAOU.PicMessage_backend.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDto createMember(MemberDto memberDto) {
+        // 이메일 또는 비밀번호 중복 여부 확인
+        boolean isEmailExists = memberRepository.existsByEmail(memberDto.getEmail());
+
+        if (isEmailExists) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다.");
+        }
+
         // CreateMemberDto에서 Member 엔티티로 변환
         Member member = new Member();
         member.setName(memberDto.getName());
@@ -66,8 +75,12 @@ public class MemberServiceImpl implements MemberService {
     }
     @Override
     public MemberDto login(String email, String password) {
-        Optional<Member> optionalMember = memberRepository.findByEmailAndPassword(email, password);
-        return optionalMember.map(MemberMapper::mapToMemberDto).orElse(null);
+        List<Member> members = memberRepository.findByEmailAndPassword(email, password);
+        if (members.isEmpty()) {
+            return null;
+        }
+        return MemberMapper.mapToMemberDto(members.get(0)); // 첫 번째 일치 항목 반환
+
     }
 
 }
