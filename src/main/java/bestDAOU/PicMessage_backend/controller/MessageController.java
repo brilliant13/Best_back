@@ -2,7 +2,10 @@ package bestDAOU.PicMessage_backend.controller;
 
 import bestDAOU.PicMessage_backend.apiPayload.ApiResponse;
 import bestDAOU.PicMessage_backend.dto.MessageDto;
+import bestDAOU.PicMessage_backend.dto.MessageGenerationRequestDto;
+import bestDAOU.PicMessage_backend.dto.MessageGenerationResponseDto;
 import bestDAOU.PicMessage_backend.service.MessageService;
+import bestDAOU.PicMessage_backend.service.OpenAIMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +22,9 @@ public class MessageController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private OpenAIMessageService openAIMessageService;
 
     @Operation(summary = "메시지 전송 API", description = "새로운 메시지를 전송하는 API입니다.")
     @PostMapping
@@ -66,5 +72,12 @@ public class MessageController {
             @Parameter(description = "삭제할 메시지 ID", required = true) @PathVariable("id") Long messageId) {
         messageService.deleteMessage(messageId);
         return ApiResponse.onSuccess("메시지가 성공적으로 삭제되었습니다.");
+    }
+
+    @Operation(summary = "메시지 자동 생성 API", description = "OpenAI API를 사용하여 메시지를 자동으로 생성하는 API입니다.")
+    @PostMapping("/generate")
+    public ApiResponse<MessageGenerationResponseDto> generateMessage(@RequestBody MessageGenerationRequestDto requestDto) {
+        MessageGenerationResponseDto responseDto = openAIMessageService.generateMessage(requestDto);
+        return ApiResponse.onSuccess(responseDto, "메시지가 성공적으로 생성되었습니다.");
     }
 }
