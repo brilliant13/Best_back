@@ -27,10 +27,20 @@ public class FriendsServiceImpl implements FriendsService {
     public FriendsDto addFriend(FriendsDto friendsDto, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+        // 새 친구 추가 시 ID를 명시적으로 null로 설정
+        friendsDto.setId(null);
+        // 수신 DTO 로깅
+        System.out.println("친구 추가 중: " + friendsDto.getFriendName() + ", 전화번호: " + friendsDto.getFriendPhone());
+
         Friends friend = FriendsMapper.mapToFriends(friendsDto, member);
         Friends savedFriend = friendsRepository.save(friend);
+
+        // 저장된 엔티티 로깅
+        System.out.println("ID가 " + savedFriend.getId() + "인 친구 저장됨");
+
         return FriendsMapper.mapToFriendsDto(savedFriend);
     }
+
 
     @Override
     public FriendsDto getFriendById(Long friendId) {
@@ -56,6 +66,7 @@ public class FriendsServiceImpl implements FriendsService {
         friend.setFeatures(friendsDto.getFeatures()); // 태그 업데이트
         friend.setMemos(friendsDto.getMemos()); // 메모 업데이트
         friend.setTones(friendsDto.getTones()); // 어조 리스트 업데이트
+        friend.setTones_prompt(friendsDto.getTones_prompt()); // 말투 프롬프트 JSON 업데이트
         friend.setRelationType(friendsDto.getRelationType()); // 관계 유형 업데이트
         friend.setGroupName(friendsDto.getGroupName()); // 그룹명 업데이트
 
