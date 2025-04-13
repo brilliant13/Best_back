@@ -1,7 +1,6 @@
 package bestDAOU.PicMessage_backend.dto;
 
 import bestDAOU.PicMessage_backend.entity.RelationType;
-import bestDAOU.PicMessage_backend.entity.Tone;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
