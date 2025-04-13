@@ -17,7 +17,7 @@ import java.util.List;
 public class Friends {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "friend_id") //id -> friend_id
+   // @Column(name = "friend_id") //id -> friend_id
     private Long id;
 
     @Column(nullable = false)
@@ -41,7 +41,7 @@ public class Friends {
     @Column(columnDefinition = "TEXT")
     private String tones_prompt; // 말투 프롬프트 JSON 전체
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member; // Member와 다대일 관계 설정
 

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,10 +42,10 @@ public class FriendsController {
 
     @Operation(summary = "회원별 친구 목록 조회 API", description = "회원 ID로 해당 회원의 모든 친구를 조회하는 API입니다.")
     @GetMapping("/member/{memberId}")
-    public ApiResponse<List<FriendsDto>> getFriendsByMemberId(
+    public ResponseEntity<List<FriendsDto>> getFriendsByMemberId(
             @Parameter(description = "회원 ID", required = true) @PathVariable("memberId") Long memberId) {
         List<FriendsDto> friends = friendsService.getFriendsByMemberId(memberId);
-        return ApiResponse.onSuccess(friends);
+        return ResponseEntity.ok(friends);
     }
 
     @Operation(summary = "친구 정보 수정 API", description = "친구 정보를 수정하는 API입니다.")
