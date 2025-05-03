@@ -1,0 +1,104 @@
+[
+  {
+    "label": "친근한 말투",
+    "instruction": "Speak in a warm and friendly tone that makes the listener feel comfortable and happy.",
+    "examples": [
+      "Hey, how's it going? Long time no see!",
+      "Wow, it's been ages! How have you been?",
+      "Hi! I was just thinking about you. Let's catch up soon!"
+    ]
+  },
+  {
+    "label": "친구 말투",
+    "instruction": "Speak in a casual and friendly tone, as if talking to a close friend, with humor and ease.",
+    "examples": [
+      "야, 뭐해? 나중에 시간되면 보자~",
+      "ㅋㅋ 요즘 뭐하고 지내? 만나서 얘기하자!",
+      "오랜만이다~ 언제 한 번 보자~"
+    ]
+  },
+  {
+    "label": "mz 말투",
+    "instruction": "Speak in a trendy and casual tone, using buzzwords and slang popular among millennials and Gen Z. Use the following special symbols to express emotions or themes in the message appropriately.",
+    "examples": [
+      "OMG, that's totally lit! ",
+      "헐 대박! 이거 진짜 개쩐다! ",
+      "축하해! 이번 일은 완전 레전드야!ྀ",
+      "이건 너무 귀엽다, 대박! ",
+      "설레서 심장이 터질 뻔했어! "
+    ]
+  },
+  {
+    "label": "유쾌한 말투",
+    "instruction": "Speak in a cheerful and lively tone that can bring a smile to the listener's face.",
+    "examples": [
+      "Hi there! What a lovely day, isn't it?",
+      "What's up? Hope you're having a fantastic day!",
+      "Hello! Just wanted to brighten your day with a quick hello!"
+    ]
+  },
+  {
+    "label": "격식있는 말투",
+    "instruction": "Speak in a polite and formal tone suitable for professional settings.",
+    "examples": [
+      "I hope this message finds you well. I would like to discuss...",
+      "Dear Sir/Madam, I am reaching out regarding...",
+      "It would be a pleasure to meet and discuss further opportunities."
+    ]
+  },
+  {
+    "label": "여자친구 말투",
+    "instruction": "Speak in a sweet and affectionate tone that conveys care and closeness to the listener.",
+    "examples": [
+      "자기야~ 오늘 하루도 힘내! 내가 응원할게!",
+      "Honey, you're doing amazing! Keep it up!",
+      "Sweetheart, let's make today special together!"
+    ]
+  },
+  {
+    "label": "오바마 말투",
+    "instruction": "Speak with charisma, wisdom, and clarity, as if delivering an inspirational and persuasive speech.",
+    "examples": [
+      "여러분, 우리는 어려운 상황에 처해 있습니다. 하지만, 함께라면, 우리는 반드시 이겨낼 수 있습니다.",
+      "변화는 쉽지 않습니다. 하지만 여러분과 제가 힘을 모은다면, 그것은 가능합니다.",
+      "오늘의 도전은 내일의 희망이 될 것입니다. 우리 모두가 함께 나아갑시다."
+    ]
+  },
+  {
+    "label": "아재 말투",
+    "instruction": "Speak in a humorous and light-hearted tone, with a touch of dad jokes and simplicity.",
+    "examples": [
+      "요즘 말이야~ 내 젊었을 때는 말이지~",
+      "아~ 날씨가 참 좋아서 기분도 좋아지네~",
+      "우리 밥이나 먹으면서 얘기하자!"
+    ]
+  },
+  {
+    "label": "감사 말투",
+    "instruction": "Speak in a tone that conveys sincere gratitude, with warmth and appreciation.",
+    "examples": [
+      "Thank you so much for your help. I truly appreciate it.",
+      "I'm deeply grateful for your kindness.",
+      "덕분에 정말 큰 도움이 되었어요. 고맙습니다!"
+    ]
+  },
+  {
+    "label": "격려 말투",
+    "instruction": "Speak in a motivational tone that encourages and uplifts the listener.",
+    "examples": [
+      "You've got this! I believe in you.",
+      "힘든 일도 함께 이겨냈잖아! 이번에도 잘 해낼 수 있을 거야.",
+      "우리 훈련 때도 버텨냈잖아? 넌 할 수 있어!"
+    ]
+  },
+  {
+    "label": "힙합 말투",
+    "instruction": "Speak with confidence and rhythm, as if you're a hip-hop artist, with a touch of street vibe.",
+    "examples": [
+      "요~! 요즘 뭐 하고 지내심? 같이 한 번 보죠~",
+      "에이 yo~ 이거 완전 인정이지!",
+      "랩 갓 등장~ 다들 준비하시고 즐겨보세요!",
+      "Yo, hit me up! 나 진짜 대박 소식 들고 왔어."
+    ]
+  }
+]

@@ -2,6 +2,7 @@ package bestDAOU.PicMessage_backend.controller;
 
 import bestDAOU.PicMessage_backend.apiPayload.ApiResponse;
 import bestDAOU.PicMessage_backend.dto.FriendsDto;
+import bestDAOU.PicMessage_backend.dto.FriendsWithTonesDto;
 import bestDAOU.PicMessage_backend.service.FriendsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,11 +41,11 @@ public class FriendsController {
         return ApiResponse.onSuccess(friendDto);
     }
 
-    @Operation(summary = "회원별 친구 목록 조회 API", description = "회원 ID로 해당 회원의 모든 친구를 조회하는 API입니다.")
+    @Operation(summary = "회원별 친구 목록 조회 API", description = "회원 ID로 해당 회원의 모든 친구를 조회하고 각 친구의 말투 정보를 함께 반환하는 API입니다.")
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<FriendsDto>> getFriendsByMemberId(
+    public ResponseEntity<List<FriendsWithTonesDto>> getFriendsByMemberId(
             @Parameter(description = "회원 ID", required = true) @PathVariable("memberId") Long memberId) {
-        List<FriendsDto> friends = friendsService.getFriendsByMemberId(memberId);
+        List<FriendsWithTonesDto> friends = friendsService.getFriendsByMemberIdWithTones(memberId);
         return ResponseEntity.ok(friends);
     }
 
