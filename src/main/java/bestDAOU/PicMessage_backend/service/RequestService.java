@@ -21,7 +21,7 @@ public class RequestService {
     private String PpurioAiApiKey;
 
     private static final Integer TIME_OUT = 5000;
-    private static final String PPURIO_ACCOUNT = "jjww6367";
+    private static final String PPURIO_ACCOUNT = "jjww6368";
     private static final String FROM = "01092014486";
     private static final String URI = "https://message.ppurio.com";
 
