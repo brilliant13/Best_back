@@ -65,15 +65,12 @@ public class ToneAnalyzerController {
 
             // 친구 정보 조회
             FriendsDto friendDto = friendsService.getFriendById(friendId);
-
-            // 기존 Friend 엔티티에 라벨 정보만 간단히 저장 (연관관계를 위해)
-            String label = jsonNode.get("label").asText();
-            friendDto.setTones(label);
+            // Friends 테이블에서 tones와 tones_prompt 필드를 제거했으므로 해당 부분 삭제
             FriendsDto updatedFriend = friendsService.updateFriend(friendId, friendDto);
 
             // 새로운 Tones 객체 생성 및 저장
             TonesDto tonesDto = new TonesDto();
-            tonesDto.setName(label);
+            tonesDto.setName(jsonNode.get("label").asText());
             tonesDto.setInstruction(jsonNode.get("instruction").asText());
 
             // examples 배열을 쉼표로 구분된 문자열로 변환

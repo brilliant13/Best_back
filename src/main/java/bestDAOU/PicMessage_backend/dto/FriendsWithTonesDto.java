@@ -34,8 +34,7 @@ public class FriendsWithTonesDto {
     @Schema(description = "메모 내용", example = "매주 토요일 만남")
     private String memos;
 
-    @Schema(description = "선호하는 말투 (쉼표로 구분)", example = "친근한,격식있는")
-    private String tones;
+    // tones 필드 제거
 
     @Schema(description = "회원 ID (소유자)", example = "1", required = true)
     private Long member_id;
@@ -57,7 +56,6 @@ public class FriendsWithTonesDto {
         this.friendEmail = friendsDto.getFriendEmail();
         this.features = friendsDto.getFeatures();
         this.memos = friendsDto.getMemos();
-        this.tones = friendsDto.getTones();
         this.member_id = friendsDto.getMember_id();
         this.relationType = friendsDto.getRelationType();
         this.groupName = friendsDto.getGroupName();

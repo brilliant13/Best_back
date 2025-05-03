@@ -11,4 +11,7 @@ public interface TonesRepository extends JpaRepository<Tones, Long> {
     List<Tones> findByFriendId(Long friendId);
     List<Tones> findByIsDefaultTrue();
     List<Tones> findByFriendIdOrIsDefaultTrue(Long friendId);
+
+    // 기본 말투의 개수를 세는 메소드
+    long countByIsDefaultTrue();
 }
