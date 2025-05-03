@@ -17,7 +17,6 @@ import java.util.List;
 public class Friends {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(name = "friend_id") //id -> friend_id
     private Long id;
 
     @Column(nullable = false)
@@ -46,4 +45,6 @@ public class Friends {
     @Column(nullable = false)
     private String groupName; // 그룹명
 
+    @Column
+    private Long selectedToneId; // 톤 ID 필드
 }
