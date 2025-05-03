@@ -104,6 +104,7 @@ public class FriendsServiceImpl implements FriendsService {
         // tones와 tones_prompt 업데이트 코드 제거
         friend.setRelationType(friendsDto.getRelationType()); // 관계 유형 업데이트
         friend.setGroupName(friendsDto.getGroupName()); // 그룹명 업데이트
+        friend.setSelectedToneId(friendsDto.getSelectedToneId()); //선택된 톤 ID 업데이트
 
         Friends updatedFriend = friendsRepository.save(friend);
         return FriendsMapper.mapToFriendsDto(updatedFriend);

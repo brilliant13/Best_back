@@ -34,8 +34,6 @@ public class FriendsWithTonesDto {
     @Schema(description = "메모 내용", example = "매주 토요일 만남")
     private String memos;
 
-    // tones 필드 제거
-
     @Schema(description = "회원 ID (소유자)", example = "1", required = true)
     private Long member_id;
 
@@ -44,6 +42,9 @@ public class FriendsWithTonesDto {
 
     @Schema(description = "그룹명", example = "대학친구")
     private String groupName;
+
+    @Schema(description = "선택된 말투 ID", example = "1")
+    private Long selectedToneId;
 
     @Schema(description = "친구의 말투 정보 목록")
     private List<ToneBasicInfoDto> tonesInfo;
@@ -59,6 +60,7 @@ public class FriendsWithTonesDto {
         this.member_id = friendsDto.getMember_id();
         this.relationType = friendsDto.getRelationType();
         this.groupName = friendsDto.getGroupName();
+        this.selectedToneId = friendsDto.getSelectedToneId();
         this.tonesInfo = tonesInfo;
     }
 }
