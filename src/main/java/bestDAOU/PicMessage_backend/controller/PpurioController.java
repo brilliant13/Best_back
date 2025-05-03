@@ -20,12 +20,6 @@ public class PpurioController {
     // 메시지와 이미지를 함께 처리하는 요청
     @PostMapping("/send")
     public List<Map<String, Object>> sendMessagesWithImage(@RequestBody List<SendMessageRequest> messages) {
-//        System.out.println("Received Messages:");
-//        for (SendMessageRequest message : messages) {
-//            System.out.println("Phone: " + message.getRecipientPhoneNumber());
-//            System.out.println("Content: " + message.getMessageContent());
-//            System.out.println("Image Base64: " + (message.getImageBase64() != null ? "Exists" : "Null"));
-//        }
         return requestService.requestSendWithImage(messages);
     }
 

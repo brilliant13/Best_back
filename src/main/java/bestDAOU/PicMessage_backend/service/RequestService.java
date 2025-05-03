@@ -235,6 +235,10 @@ public class RequestService {
         public String getImageBase64() {
             return imageBase64;
         }
+
+        public void setMessageContent(String messageContent) {
+            this.messageContent = messageContent;
+        }
     }
 }
 
