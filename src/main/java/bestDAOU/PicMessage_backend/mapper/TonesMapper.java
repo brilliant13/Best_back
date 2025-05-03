@@ -13,7 +13,8 @@ public class TonesMapper {
                 tones.getName(),
                 tones.getInstruction(),
                 tones.getExamples(),
-                tones.getFriend().getId()
+                tones.isDefault(),
+                tones.getFriend() != null ? tones.getFriend().getId() : null
         );
     }
 
@@ -24,6 +25,7 @@ public class TonesMapper {
                 tonesDto.getName(),
                 tonesDto.getInstruction(),
                 tonesDto.getExamples(),
+                tonesDto.isDefault(),
                 friend
         );
     }

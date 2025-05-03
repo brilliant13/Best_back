@@ -25,6 +25,9 @@ public class TonesDto {
     @Schema(description = "말투 예시", example = "안녕! 잘 지냈어?, 요즘 어때?, 진짜?")
     private String examples;
 
-    @Schema(description = "친구 ID", example = "1", required = true)
-    private Long friend_id;
+    @Schema(description = "기본 말투 여부", example = "true")
+    private boolean isDefault;
+
+    @Schema(description = "친구 ID", example = "1")
+    private Long friend_id;  // 기본 말투는 null
 }

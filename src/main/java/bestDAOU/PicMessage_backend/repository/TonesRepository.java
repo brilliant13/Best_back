@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface TonesRepository extends JpaRepository<Tones, Long> {
     List<Tones> findByFriendId(Long friendId);
+    List<Tones> findByIsDefaultTrue();
+    List<Tones> findByFriendIdOrIsDefaultTrue(Long friendId);
 }

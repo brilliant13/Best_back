@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,7 +39,7 @@ public class ToneAnalyzerController {
         this.tonesService = tonesService;
     }
 
-    @Operation(summary = "말투 추출 및 저장", description = "텍스트 파일에서 특정 사용자의 말투를 분석하여 말투를 추출하고 말투 정보를 Tones 테이블에 저장합니다.")
+    @Operation(summary = "말투 추출 및 저장", description = "텍스트 파일에서 특정 사용자의 말투를 분석하여 말투를 추출하고 말투 정보를 저장합니다.")
     @PostMapping(value = "/analyze", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> analyzeTone(
             @Parameter(description = "분석할 텍스트 파일", required = true)
@@ -88,6 +87,7 @@ public class ToneAnalyzerController {
             }
             tonesDto.setExamples(examplesBuilder.toString());
             tonesDto.setFriend_id(friendId);
+            tonesDto.setDefault(false); // 사용자 커스텀 말투
 
             // Tones 테이블에 저장
             TonesDto savedTones = tonesService.addTones(tonesDto, friendId);
@@ -99,34 +99,18 @@ public class ToneAnalyzerController {
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {
-            Map<String, String> errorResponse = new HashMap<>();
+            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
 
         } catch (IOException e) {
-            Map<String, String> errorResponse = new HashMap<>();
+            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "파일 처리 중 오류가 발생했습니다: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
 
         } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
+            Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "말투 분석 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(500).body(errorResponse);
-        }
-    }
-
-    @Operation(summary = "친구별 말투 조회", description = "친구 ID로 해당 친구의 모든 말투를 조회하는 API입니다.")
-    @GetMapping("/friend/{friendId}")
-    public ResponseEntity<?> getTonesByFriendId(
-            @Parameter(description = "친구 ID", required = true)
-            @PathVariable("friendId") Long friendId) {
-
-        try {
-            List<TonesDto> tones = tonesService.getTonesByFriendId(friendId);
-            return ResponseEntity.ok(tones);
-        } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "말투 조회 중 오류가 발생했습니다: " + e.getMessage());
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
