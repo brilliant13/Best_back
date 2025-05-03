@@ -81,7 +81,7 @@ public class FriendsServiceImpl implements FriendsService {
 
             // Tones 엔티티를 ToneBasicInfoDto로 변환
             List<ToneBasicInfoDto> tonesInfoList = tones.stream()
-                    .map(tone -> new ToneBasicInfoDto(tone.getId(), tone.getName(), tone.isDefault()))
+                    .map(tone -> new ToneBasicInfoDto(tone.getId(), tone.getName(), tone.isDefault(),tone.getExamples()))
                     .collect(Collectors.toList());
 
             // FriendsWithTonesDto 생성 및 리스트에 추가
