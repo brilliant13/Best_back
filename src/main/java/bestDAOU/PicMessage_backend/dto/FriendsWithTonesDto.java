@@ -1,6 +1,5 @@
 package bestDAOU.PicMessage_backend.dto;
 
-import bestDAOU.PicMessage_backend.entity.RelationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +37,7 @@ public class FriendsWithTonesDto {
     private Long member_id;
 
     @Schema(description = "관계 유형", example = "FRIEND", required = true)
-    private RelationType relationType;
+    private String relationType;
 
     @Schema(description = "그룹명", example = "대학친구")
     private String groupName;

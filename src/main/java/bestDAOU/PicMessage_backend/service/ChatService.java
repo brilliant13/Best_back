@@ -29,7 +29,6 @@ public class ChatService {
         String gptResponse = callGPT(userMessage);
         Map<String, Object> parsed = parseGptResponse(gptResponse);
         String action = (String) parsed.get("action");
-
         if ("send_message".equals(action)) {
             Map<String, Object> params = (Map<String, Object>) parsed.get("params");
             Object recipientObj = params.get("recipient");
