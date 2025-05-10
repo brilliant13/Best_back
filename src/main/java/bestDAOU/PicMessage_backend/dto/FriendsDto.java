@@ -1,6 +1,5 @@
 package bestDAOU.PicMessage_backend.dto;
 
-import bestDAOU.PicMessage_backend.entity.RelationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +34,6 @@ public class FriendsDto {
     @Schema(description = "선호하는 말투 (쉼표로 구분)", example = "친근한,격식있는")
     private String tones;
 
-
     @Schema(description = "말투 프롬프트 JSON", example = "{\"label\":\"친근한 말투\",\"instruction\":\"상대방과 친밀한 관계를 나타내는 말투로 말하세요.\",\"examples\":[\"안녕, 잘 지냈어?\"]}")
     private String tones_prompt;
 
@@ -43,7 +41,7 @@ public class FriendsDto {
     private Long member_id;
 
     @Schema(description = "관계 유형", example = "FRIEND", required = true)
-    private RelationType relationType;
+    private String relationType;
 
     @Schema(description = "그룹명", example = "대학친구")
     private String groupName;

@@ -24,7 +24,6 @@ public class FriendsMapper {
     }
 
     // FriendsDto -> Friends 엔티티로 매핑
-    // FriendsDto -> Friends 엔티티로 매핑
     public static Friends mapToFriends(FriendsDto friendsDto, Member member) {
         return new Friends(
                 friendsDto.getId(),

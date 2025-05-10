@@ -45,9 +45,8 @@ public class Friends {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member; // Member와 다대일 관계 설정
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RelationType relationType; // 관계 유형 (친구, 선배, 부모님 등)
+    private String relationType; // 관계 유형 (친구, 선배, 부모님 등)
 
     @Column(nullable = false)
     private String groupName; // 그룹명
