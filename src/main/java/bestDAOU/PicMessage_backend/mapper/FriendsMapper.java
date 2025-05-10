@@ -15,11 +15,10 @@ public class FriendsMapper {
                 friends.getFriendEmail(),
                 friends.getFeatures(),
                 friends.getMemos(),
-                friends.getTones(),
-                friends.getTones_prompt(),
                 friends.getMember().getId(), // Member의 ID를 직접 설정
                 friends.getRelationType(),
-                friends.getGroupName()
+                friends.getGroupName(),
+                friends.getSelectedToneId()
         );
     }
 
@@ -32,11 +31,10 @@ public class FriendsMapper {
                 friendsDto.getFriendEmail(),
                 friendsDto.getFeatures(),
                 friendsDto.getMemos(),
-                friendsDto.getTones(),
-                friendsDto.getTones_prompt(),
                 member, // Member 엔티티를 직접 설정
                 friendsDto.getRelationType(),
-                friendsDto.getGroupName()
+                friendsDto.getGroupName(),
+                friendsDto.getSelectedToneId()
         );
     }
 }

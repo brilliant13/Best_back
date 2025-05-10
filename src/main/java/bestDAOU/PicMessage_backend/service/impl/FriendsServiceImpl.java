@@ -1,16 +1,21 @@
 package bestDAOU.PicMessage_backend.service.impl;
 
 import bestDAOU.PicMessage_backend.dto.FriendsDto;
+import bestDAOU.PicMessage_backend.dto.FriendsWithTonesDto;
+import bestDAOU.PicMessage_backend.dto.ToneBasicInfoDto;
 import bestDAOU.PicMessage_backend.entity.Friends;
 import bestDAOU.PicMessage_backend.entity.Member;
+import bestDAOU.PicMessage_backend.entity.Tones;
 import bestDAOU.PicMessage_backend.exception.ResourceNotFoundException;
 import bestDAOU.PicMessage_backend.mapper.FriendsMapper;
 import bestDAOU.PicMessage_backend.repository.FriendsRepository;
 import bestDAOU.PicMessage_backend.repository.MemberRepository;
+import bestDAOU.PicMessage_backend.repository.TonesRepository;
 import bestDAOU.PicMessage_backend.service.FriendsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +27,9 @@ public class FriendsServiceImpl implements FriendsService {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private TonesRepository tonesRepository;
 
     @Override
     public FriendsDto addFriend(FriendsDto friendsDto, Long memberId) {
@@ -57,6 +65,34 @@ public class FriendsServiceImpl implements FriendsService {
     }
 
     @Override
+    public List<FriendsWithTonesDto> getFriendsByMemberIdWithTones(Long memberId) {
+        // 1. 회원의 모든 친구 조회
+        List<Friends> friends = friendsRepository.findByMemberId(memberId);
+
+        // 2. 각 친구별로 말투 정보를 조회하여 FriendsWithTonesDto 생성
+        List<FriendsWithTonesDto> friendsWithTones = new ArrayList<>();
+
+        for (Friends friend : friends) {
+            // 친구 기본 정보를 FriendsDto로 변환
+            FriendsDto friendsDto = FriendsMapper.mapToFriendsDto(friend);
+
+            // 친구의 커스텀 말투와 모든 기본 말투 조회
+            List<Tones> tones = tonesRepository.findByFriendIdOrIsDefaultTrue(friend.getId());
+
+            // Tones 엔티티를 ToneBasicInfoDto로 변환
+            List<ToneBasicInfoDto> tonesInfoList = tones.stream()
+                    .map(tone -> new ToneBasicInfoDto(tone.getId(), tone.getName(), tone.isDefault(),tone.getExamples()))
+                    .collect(Collectors.toList());
+
+            // FriendsWithTonesDto 생성 및 리스트에 추가
+            FriendsWithTonesDto friendWithTones = new FriendsWithTonesDto(friendsDto, tonesInfoList);
+            friendsWithTones.add(friendWithTones);
+        }
+
+        return friendsWithTones;
+    }
+
+    @Override
     public FriendsDto updateFriend(Long friendId, FriendsDto friendsDto) {
         Friends friend = friendsRepository.findById(friendId)
                 .orElseThrow(() -> new ResourceNotFoundException("Friend not found with id: " + friendId));
@@ -65,10 +101,10 @@ public class FriendsServiceImpl implements FriendsService {
         friend.setFriendPhone(friendsDto.getFriendPhone()); // 친구 전화번호 업데이트
         friend.setFeatures(friendsDto.getFeatures()); // 태그 업데이트
         friend.setMemos(friendsDto.getMemos()); // 메모 업데이트
-        friend.setTones(friendsDto.getTones()); // 어조 리스트 업데이트
-        friend.setTones_prompt(friendsDto.getTones_prompt()); // 말투 프롬프트 JSON 업데이트
+        // tones와 tones_prompt 업데이트 코드 제거
         friend.setRelationType(friendsDto.getRelationType()); // 관계 유형 업데이트
         friend.setGroupName(friendsDto.getGroupName()); // 그룹명 업데이트
+        friend.setSelectedToneId(friendsDto.getSelectedToneId()); //선택된 톤 ID 업데이트
 
         Friends updatedFriend = friendsRepository.save(friend);
         return FriendsMapper.mapToFriendsDto(updatedFriend);
@@ -78,5 +114,4 @@ public class FriendsServiceImpl implements FriendsService {
     public void deleteFriend(Long friendId) {
         friendsRepository.deleteById(friendId);
     }
-
 }

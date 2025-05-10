@@ -17,7 +17,6 @@ import java.util.List;
 public class Friends {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-   // @Column(name = "friend_id") //id -> friend_id
     private Long id;
 
     @Column(nullable = false)
@@ -35,12 +34,6 @@ public class Friends {
     @Column
     private String memos; // 메모 문자열
 
-    @Column
-    private String  tones; // 어조 문자열
-
-    @Column(columnDefinition = "TEXT")
-    private String tones_prompt; // 말투 프롬프트 JSON 전체
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member; // Member와 다대일 관계 설정
@@ -51,4 +44,6 @@ public class Friends {
     @Column(nullable = false)
     private String groupName; // 그룹명
 
+    @Column
+    private Long selectedToneId; // 톤 ID 필드
 }
