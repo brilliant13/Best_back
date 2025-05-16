@@ -17,4 +17,7 @@ public class ToneTransformRequestDto {
 
     @Schema(description = "적용할 말투 ID", example = "1", required = true)
     private Long toneId;
+
+    @Schema(description = "친구 ID )", example = "1")
+    private Long friendId;
 }
