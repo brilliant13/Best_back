@@ -26,7 +26,9 @@ public class ToneTransformController {
             @RequestBody ToneTransformRequestDto requestDto) {
         try {
             ToneTransformResponseDto responseDto = toneTransformService.transformTone(
-                    requestDto.getOriginalText(), requestDto.getToneId());
+                    requestDto.getOriginalText(),
+                    requestDto.getToneId(),
+                    requestDto.getFriendId());
             return ApiResponse.onSuccess(responseDto, "텍스트가 성공적으로 변환되었습니다.");
         } catch (IllegalArgumentException e) {
             return ApiResponse.onFailure("TONE_TRANSFORM400", e.getMessage(), null);
