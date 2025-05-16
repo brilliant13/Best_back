@@ -120,6 +120,7 @@ public class ToneTransformServiceImpl implements ToneTransformService {
                                 "주어진 지침과 예시에 따라 원본 텍스트의 내용은 유지하면서 말투를 변경하세요. " +
                                 "친구의 특징과 과거 추억을 자연스럽게 반영하여 개인화된 메시지로 만들어주세요. " +
                                 "변환된 텍스트만 응답하고 다른 설명은 포함하지 마세요." +
+                                "현재 년도는 2025 입니다." +
                                 "한글로 대답하세요"
                 ),
                 Map.of(
