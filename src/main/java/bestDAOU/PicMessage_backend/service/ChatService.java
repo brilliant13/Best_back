@@ -2,11 +2,14 @@ package bestDAOU.PicMessage_backend.service;
 
 import bestDAOU.PicMessage_backend.dto.FriendsDto;
 import bestDAOU.PicMessage_backend.entity.Friends;
+import bestDAOU.PicMessage_backend.entity.Tones;
 import bestDAOU.PicMessage_backend.repository.FriendsRepository;
+import bestDAOU.PicMessage_backend.repository.ToneRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +18,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
     private final FriendsRepository friendRepository;
+    private final ToneRepository toneRepository;
     private final RequestService requestService;
     private final FriendsService friendsService;
 
@@ -38,6 +45,13 @@ public class ChatService {
     );
 
     public Map<String, Object> handleUserMessage(String userMessage) {
+
+        log.debug("handleUserMessage() called with >>> {}", userMessage);
+
+        if (userMessage.contains("맞춤화")) {
+            System.out.println("userMessage111 = " + userMessage);
+            return handlePersonalizedMessage(userMessage);
+        }
         String gptResponse = callGPT(userMessage);
         Map<String, Object> parsed = parseGptResponse(gptResponse);
         String action = (String) parsed.get("action");
@@ -127,9 +141,9 @@ public class ChatService {
             dto.setMemos((String) params.getOrDefault("memos", ""));
             dto.setGroupName((String) params.getOrDefault("groupName", "기본"));
             dto.setRelationType((String) params.getOrDefault("relationType", ""));
-            dto.setSelectedToneId(params.get("selectedToneId") != null
-                    ? Long.parseLong(params.get("selectedToneId").toString())
-                    : null);
+            // selectedToneId가 없으면 13으로 디폴트
+            Long toneId = 13L;
+            dto.setSelectedToneId(toneId);
             dto.setId(null);
             dto.setMember_id(1L);
 
@@ -139,6 +153,7 @@ public class ChatService {
 
         else if ("text_response_greeting".equals(action)) {
             String gptText = (String) parsed.get("response");
+            System.out.println("gptText = " + gptText);
             return Map.of("response", gptText); // 깔끔하게 인사말만 보여줌
         }
 
@@ -168,7 +183,7 @@ public class ChatService {
                     "messages", List.of(
                             Map.of("role", "system", "content",
                                     "너는 사용자의 자연어 명령을 분석해서 액션을 JSON 형식으로 반환해야 해. \"보내고 싶어\", \"보내줘\", \"메시지\" 등의 문구가 포함되면 무조건 send_message로 해석해야 해.\n" +
-                                            "연락처 추가 요청은 '추가해줘', '연락처 등록', '저장해줘' 등의 명령일 때만 add_friend로 해석해.\n\n\n" +
+                                            "연락처 추가 요청은 '추가해줘', '연락처 등록', '저장해줘', 연락처 추가 하고싶어 등의 명령일 때만 add_friend로 해석해.\n\n\n" +
 
                                             "### 1. 문자 전송 요청\n" +
                                             "- 형식: {\"action\": \"send_message\", \"params\": {\"recipient\": [\"이름1\", \"이름2\"], \"message\": \"보낼 문자 내용\"}}\n" +
@@ -221,6 +236,142 @@ public class ChatService {
             return mapper.readValue(content, new TypeReference<>() {});
         } catch (Exception e) {
             return Map.of("action", "text_response", "response", content);
+        }
+    }
+
+    /** “홍길동에게 XX 보내줘” 또는 “홍길동한테 XX 보내줘”에서 “홍길동”만 뽑기 */
+    private String extractName(String text) {
+        for (String token : text.trim().split("\\s+")) {
+            if (token.matches(".+(?:에게|한테)$")) {
+                return token.replaceAll("(?:에게|한테)$", "");
+            }
+        }
+        return null;
+    }
+
+    private Map<String, Object> handlePersonalizedMessage(String userMessage) {
+        log.debug("=== Personalized Flow Start ===");
+        log.debug("Raw userMessage: {}", userMessage);
+
+        // 1) 토큰 찍어보기
+        String[] tokens = userMessage.trim().split("\\s+");
+        log.debug("Tokens: {}", Arrays.toString(tokens));
+
+
+        // --- 1) 수신자 이름·본문 파싱 (간단 샘플) ---
+        String name = extractName(userMessage);
+        String body = userMessage;
+        log.debug("name for prompt: {}", name);
+        log.debug("body for prompt: {}", body);
+
+        // --- 2) DB에서 친구·말투 조회 ---
+        Friends friend = friendRepository
+                .findByFriendName(name)
+                .orElseThrow(() -> new IllegalArgumentException("친구를 찾을 수 없습니다: " + name));
+
+
+        log.debug("Loaded Friend → id: {}, name: {}, phone: {}, features: {}, memos: {}",
+                friend.getId(), friend.getFriendName(), friend.getFriendPhone(),
+                friend.getFeatures(), friend.getMemos());
+
+        // 선택된 톤 ID 가 없다면 기본 톤을 가져오도록 구현
+        Long toneId = friend.getSelectedToneId();
+        log.debug("Friend.selectedToneId = {}", toneId);
+        Tones tone = Optional.ofNullable(friend.getSelectedToneId())
+                .flatMap(toneRepository::findById)
+                .orElseGet(() ->
+                        // 기본 말투가 있으면 꺼내고, 없으면 예외 처리하거나 디폴트 메시지 사용
+                        toneRepository.findFirstByFriendAndIsDefaultTrue(friend)
+                                .orElseThrow(() ->
+                                        new IllegalStateException("기본 말투가 설정되지 않았습니다: " + friend.getFriendName())
+                                )
+                );
+
+        log.debug("Using Tone → id: {}, name: {}, isDefault: {}", tone.getId(), tone.getName(), tone.isDefault());
+        // --- 3) GPT 프롬프트 조립 ---
+        String prompt = """
+            너는 1:1 대화 형식의 친구 대리 쳇봇이야.
+            아래 내용을 참고해서, 사용자 요청 문장을 더 자연스럽고 따뜻하게 바꿔줘.
+
+            [수신자 정보]
+            이름: %s
+            특징: %s
+            메모: %s
+
+            [말투 설정]
+            말투 이름: %s
+            지침: %s
+            예시: %s
+
+            [사용자 요청 원문]
+            "%s"
+            """.formatted(
+                friend.getFriendName(),
+                friend.getFeatures(),
+                friend.getMemos(),
+                tone.getName(),
+                tone.getInstruction(),
+                tone.getExamples(),
+                body
+        );
+        log.debug("Constructed GPT prompt:\n{}", prompt);
+
+        // --- 4) GPT 호출 (맞춤화 생성) ---
+        String aiMessage = callPersonalizedGPT(prompt);
+        log.debug("Raw GPT response: {}", aiMessage);
+
+        // → "content: ..." 이 붙어왔다면 prefix 제거
+        aiMessage = aiMessage.replaceFirst("^content:\\s*", "");
+        log.debug("Cleaned GPT message: {}", aiMessage);
+
+        // --- 5) Ppurio API 로 실제 전송 ---
+        RequestService.SendMessageRequest req = new RequestService.SendMessageRequest();
+        req.setRecipientPhoneNumber(friend.getFriendPhone());
+        req.setMessageContent(aiMessage);
+        log.debug("Sending via Ppurio → phone: {}, message: {}", friend.getFriendPhone(), aiMessage);
+
+        List<Map<String, Object>> result = requestService.requestSendWithImage(List.of(req));
+        log.debug("Ppurio response: {}", result);
+        // --- 6) 결과 반환 ---
+        // 6) 결과 반환 — 여기만 수정
+        String confirmation = String.format(
+                "보낸 메시지 : \"%s\"\n메시지 전송이 완료되었습니다.",
+                aiMessage
+        );
+        log.debug("Returning confirmation: {}", confirmation);
+
+        return Map.of(
+                "response", confirmation,
+                "result",   result
+        );
+    }
+
+    /** GPT 에 단일 프롬프트를 던져 텍스트를 받아오는 헬퍼 (예시) */
+    private String callPersonalizedGPT(String prompt) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String,Object> body = Map.of(
+                    "model", "gpt-4o",
+                    "messages", List.of(
+                            Map.of("role", "system", "content",
+                                    "너는 친구에게 보내는 따뜻한 1:1 대화 메시지를 다듬어 주는 AI야. " +
+                                            "오직 content 필드에만 최종 메시지를 담아 응답해줘."
+                            ),
+                            Map.of("role", "user", "content", prompt)
+                    )
+            );
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Authorization", "Bearer " + gptApiKey)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body)))
+                    .build();
+            HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
+            JsonNode root = mapper.readTree(resp.body());
+            return root.at("/choices/0/message/content").asText();
+        } catch (Exception e) {
+            throw new RuntimeException("맞춤화 GPT 호출 실패", e);
         }
     }
 }
