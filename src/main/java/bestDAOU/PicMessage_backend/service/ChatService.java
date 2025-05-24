@@ -283,7 +283,8 @@ public class ChatService {
         // 4) GPT 프롬프트 조립
         String prompt = String.format("""
         너는 1:1 대화 형식의 친구 대리 쳇봇이야.
-        아래 내용을 참고해서, 사용자 요청 문장을 더 자연스럽고 따뜻하게 바꿔줘.
+        사용자 요청을 더 자연스럽고 따뜻하게 바꿔줄 때,\s
+        **반드시** 수신자의 [특징]과 [메모]를 참고하여 문장 곳곳에 녹여내야 해.
 
         [수신자 정보]
         이름: %s
@@ -307,13 +308,14 @@ public class ChatService {
                 body
         );
 
+        System.out.println("prompt = " + prompt);
         // 5) GPT 호출
         String rawResponse = callPersonalizedGPT(prompt);
         log.debug("Raw GPT response: {}", rawResponse);
         // 6) 'content: "..."' 프리픽스 또는 JSON 래퍼 제거 후 본문만 추출
         String aiMessage = rawResponse.trim();
-        // 6-1) content: "..." 패턴
-        Matcher m = Pattern.compile("^content:\\s*\"([\\s\\S]*)\"$").matcher(aiMessage);
+        // 6-1) content: "..." 또는 내용: "..." 패턴으로 감싸인 경우 본문만 추출
+        Matcher m = Pattern.compile("^(?:content|내용):\\s*\"([\\s\\S]*)\"$").matcher(aiMessage);
         if (m.find()) {
             aiMessage = m.group(1);
         } else {
