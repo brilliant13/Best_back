@@ -12,7 +12,7 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // 모든 경로에 대해 CORS 허용
+                registry.addMapping("/**") // 모든 경로에 대해 CORS 허용git -
 //                        .allowedOriginPatterns("http://localhost:3000") // React 앱이 실행되는 포트
 //                        .allowedOriginPatterns("http://223.194.154.236:3000") // React 앱이 실행되는 포트
                         .allowedOriginPatterns(
