@@ -42,7 +42,7 @@ public class FriendsWithTonesDto {
     @Schema(description = "그룹명", example = "대학친구")
     private String groupName;
 
-    @Schema(description = "선택된 말투 ID", example = "1")
+    @Schema(description = "선택된 말투 ID", example = "13")
     private Long selectedToneId;
 
     @Schema(description = "친구의 말투 정보 목록")

@@ -41,9 +41,17 @@ public class FriendsController {
         return ApiResponse.onSuccess(friendDto);
     }
 
-    @Operation(summary = "회원별 친구 목록 조회 API", description = "회원 ID로 해당 회원의 모든 친구를 조회하고 각 친구의 말투 정보를 함께 반환하는 API입니다.")
+    @Operation(summary = "회원별 친구 목록 조회 API", description = "회원 ID로 해당 회원의 모든 친구를 조회하는 API입니다.")
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<FriendsWithTonesDto>> getFriendsByMemberId(
+    public ResponseEntity<List<FriendsDto>> getFriendsByMemberId(
+            @Parameter(description = "회원 ID", required = true) @PathVariable("memberId") Long memberId) {
+        List<FriendsDto> friends = friendsService.getFriendsByMemberId(memberId);
+        return ResponseEntity.ok(friends);
+    }
+
+    @Operation(summary = "회원별 친구 목록 조회(말투 정보 포함) API", description = "회원 ID로 해당 회원의 모든 친구를 조회하고 각 친구의 말투 정보를 함께 반환하는 API입니다.")
+    @GetMapping("/member/{memberId}/with-tones")
+    public ResponseEntity<List<FriendsWithTonesDto>> getFriendsByMemberIdWithTones(
             @Parameter(description = "회원 ID", required = true) @PathVariable("memberId") Long memberId) {
         List<FriendsWithTonesDto> friends = friendsService.getFriendsByMemberIdWithTones(memberId);
         return ResponseEntity.ok(friends);
