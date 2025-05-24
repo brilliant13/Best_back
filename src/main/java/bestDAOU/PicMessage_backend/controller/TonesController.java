@@ -1,7 +1,9 @@
 package bestDAOU.PicMessage_backend.controller;
 
 import bestDAOU.PicMessage_backend.apiPayload.ApiResponse;
+import bestDAOU.PicMessage_backend.dto.FriendsDto;
 import bestDAOU.PicMessage_backend.dto.TonesDto;
+import bestDAOU.PicMessage_backend.service.FriendsService;
 import bestDAOU.PicMessage_backend.service.TonesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +27,9 @@ public class TonesController {
 
     @Autowired
     private TonesService tonesService;
+
+    @Autowired
+    private FriendsService friendsService;
 
     @Operation(summary = "말투 등록 API", description = "특정 친구의 말투를 등록하는 API입니다.")
     @PostMapping("/friend/{friendId}")
@@ -98,4 +104,29 @@ public class TonesController {
             return ApiResponse.onFailure("TONES_ERROR", "기본 말투 초기화 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
+
+    @Operation(summary = "친구별 전체 말투 조회 API", description = "친구 ID로 해당 친구의 커스텀 말투와 모든 기본 말투를 함께 조회하는 API입니다.")
+    @GetMapping("/friend/{friendId}/all")
+    public ResponseEntity<Map<String, Object>> getAllTonesByFriendId(
+            @Parameter(description = "친구 ID", required = true) @PathVariable("friendId") Long friendId) {
+
+        // 친구의 커스텀 말투 조회
+        List<TonesDto> customTones = tonesService.getTonesByFriendId(friendId);
+
+        // 기본 말투 조회
+        List<TonesDto> defaultTones = tonesService.getDefaultTones();
+
+        // 모든 말투를 하나의 리스트로
+        List<TonesDto> allTones = new ArrayList<>();
+        allTones.addAll(customTones);
+        allTones.addAll(defaultTones);
+
+        // 응답 데이터
+        Map<String, Object> response = new HashMap<>();
+        response.put("tones", allTones);
+        response.put("totalCount", allTones.size());
+
+        return ResponseEntity.ok(response);
+    }
+
 }
