@@ -182,9 +182,10 @@ public class ChatService {
                     "model", "gpt-4o",
                     "messages", List.of(
                             Map.of("role", "system", "content",
-                                    "너는 사용자의 자연어 명령을 분석해서 액션을 JSON 형식으로 반환해야 해. \"보내고 싶어\", \"보내줘\", \"메시지\" 등의 문구가 포함되면 무조건 send_message로 해석해야 해.\n" +
-                                            "연락처 추가 요청은 '추가해줘', '연락처 등록', '저장해줘', 연락처 추가 하고싶어 등의 명령일 때만 add_friend로 해석해.\n\n\n" +
-
+                                    "너는 사용자의 자연어 명령을 확인해서 다음 규칙에 따라 JSON 액션을 반환해야 해:\n" +
+                                            "1) 메시지 전송 요청: “보내고 싶어”, “보내줘”, “메시지” 등의 단어가 있으면 send_message\n" +
+                                            "2) 연락처 추가 요청: 문장에 “연락처” 또는 “주소록” 또는 “친구” 같은 단어와 “추가”, “등록”, “저장”, “넣어” 등이 조합되어 있으면 무조건 add_friend\n" +
+                                            "   예) “새 연락처를 등록하고 싶어”, “주소록에 추가해줘”, “친구를 추가해주세요” → add_friend\n\n" +
                                             "### 1. 문자 전송 요청\n" +
                                             "- 형식: {\"action\": \"send_message\", \"params\": {\"recipient\": [\"이름1\", \"이름2\"], \"message\": \"보낼 문자 내용\"}}\n" +
                                             "- 예: '홍길동에게 오늘 뭐해? 보내줘'\n\n" +
@@ -253,30 +254,22 @@ public class ChatService {
         log.debug("=== Personalized Flow Start ===");
         log.debug("Raw userMessage: {}", userMessage);
 
-        // 1) 토큰 찍어보기
-        String[] tokens = userMessage.trim().split("\\s+");
-        log.debug("Tokens: {}", Arrays.toString(tokens));
-
-
-        // --- 1) 수신자 이름·본문 파싱 (간단 샘플) ---
+        // 1) 수신자 이름·본문 파싱
         String name = extractName(userMessage);
         String body = userMessage;
-        log.debug("name for prompt: {}", name);
-        log.debug("body for prompt: {}", body);
 
-        // --- 2) DB에서 친구·말투 조회 ---
-        Friends friend = friendRepository
-                .findByFriendName(name)
-                .orElseThrow(() -> new IllegalArgumentException("친구를 찾을 수 없습니다: " + name));
+        // 2) 동명이인 처리: 이름으로 모두 조회
+        List<Friends> sameNameList = friendRepository.findAllByFriendName(name);
+        if (sameNameList.isEmpty()) {
+            return Map.of("response", name + "님이 주소록에 없습니다. 먼저 연락처를 등록해주세요.");
+        }
+        if (sameNameList.size() > 1) {
+            return Map.of("response", name + "님 이름으로 동명이인이 " + sameNameList.size() + "명 등록되어 있습니다. 구체적인 구분 정보를 입력해주세요.");
+        }
 
-
-        log.debug("Loaded Friend → id: {}, name: {}, phone: {}, features: {}, memos: {}",
-                friend.getId(), friend.getFriendName(), friend.getFriendPhone(),
-                friend.getFeatures(), friend.getMemos());
-
-        // 선택된 톤 ID 가 없다면 기본 톤을 가져오도록 구현
-        Long toneId = friend.getSelectedToneId();
-        log.debug("Friend.selectedToneId = {}", toneId);
+        // 이제 정확히 한 명만 선택됨
+        Friends friend = sameNameList.get(0);
+        // 3) 톤 조회 (선택된 톤이 없으면 기본 톤)
         Tones tone = Optional.ofNullable(friend.getSelectedToneId())
                 .flatMap(toneRepository::findById)
                 .orElseGet(() ->
@@ -287,25 +280,24 @@ public class ChatService {
                                 )
                 );
 
-        log.debug("Using Tone → id: {}, name: {}, isDefault: {}", tone.getId(), tone.getName(), tone.isDefault());
-        // --- 3) GPT 프롬프트 조립 ---
-        String prompt = """
-            너는 1:1 대화 형식의 친구 대리 쳇봇이야.
-            아래 내용을 참고해서, 사용자 요청 문장을 더 자연스럽고 따뜻하게 바꿔줘.
+        // 4) GPT 프롬프트 조립
+        String prompt = String.format("""
+        너는 1:1 대화 형식의 친구 대리 쳇봇이야.
+        아래 내용을 참고해서, 사용자 요청 문장을 더 자연스럽고 따뜻하게 바꿔줘.
 
-            [수신자 정보]
-            이름: %s
-            특징: %s
-            메모: %s
+        [수신자 정보]
+        이름: %s
+        특징: %s
+        메모: %s
 
-            [말투 설정]
-            말투 이름: %s
-            지침: %s
-            예시: %s
+        [말투 설정]
+        말투 이름: %s
+        지침: %s
+        예시: %s
 
-            [사용자 요청 원문]
-            "%s"
-            """.formatted(
+        [사용자 요청 원문]
+        "%s"
+        """,
                 friend.getFriendName(),
                 friend.getFeatures(),
                 friend.getMemos(),
@@ -314,38 +306,44 @@ public class ChatService {
                 tone.getExamples(),
                 body
         );
-        log.debug("Constructed GPT prompt:\n{}", prompt);
 
-        // --- 4) GPT 호출 (맞춤화 생성) ---
-        String aiMessage = callPersonalizedGPT(prompt);
-        log.debug("Raw GPT response: {}", aiMessage);
+        // 5) GPT 호출
+        String rawResponse = callPersonalizedGPT(prompt);
+        log.debug("Raw GPT response: {}", rawResponse);
+        // 6) 'content: "..."' 프리픽스 또는 JSON 래퍼 제거 후 본문만 추출
+        String aiMessage = rawResponse.trim();
+        // 6-1) content: "..." 패턴
+        Matcher m = Pattern.compile("^content:\\s*\"([\\s\\S]*)\"$").matcher(aiMessage);
+        if (m.find()) {
+            aiMessage = m.group(1);
+        } else {
+            // 6-2) JSON 객체 형태일 경우 content 필드만 꺼내기
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = mapper.readTree(aiMessage);
+                if (node.has("content")) {
+                    aiMessage = node.get("content").asText();
+                }
+            } catch (Exception ignored) {}
+        }
 
-        // → "content: ..." 이 붙어왔다면 prefix 제거
-        aiMessage = aiMessage.replaceFirst("^content:\\s*", "");
-        log.debug("Cleaned GPT message: {}", aiMessage);
-
-        // --- 5) Ppurio API 로 실제 전송 ---
+        log.debug("Final personalized message: {}", aiMessage);
+        // 8) 실제 전송
         RequestService.SendMessageRequest req = new RequestService.SendMessageRequest();
         req.setRecipientPhoneNumber(friend.getFriendPhone());
         req.setMessageContent(aiMessage);
-        log.debug("Sending via Ppurio → phone: {}, message: {}", friend.getFriendPhone(), aiMessage);
-
         List<Map<String, Object>> result = requestService.requestSendWithImage(List.of(req));
-        log.debug("Ppurio response: {}", result);
-        // --- 6) 결과 반환 ---
-        // 6) 결과 반환 — 여기만 수정
+
+        // 9) 결과 반환
         String confirmation = String.format(
-                "보낸 메시지 : \"%s\"\n메시지 전송이 완료되었습니다.",
+                "보낸 메시지 : %s\n메시지 전송이 완료되었습니다.",
                 aiMessage
         );
-        log.debug("Returning confirmation: {}", confirmation);
-
         return Map.of(
                 "response", confirmation,
                 "result",   result
         );
     }
-
     /** GPT 에 단일 프롬프트를 던져 텍스트를 받아오는 헬퍼 (예시) */
     private String callPersonalizedGPT(String prompt) {
         try {
