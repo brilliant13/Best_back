@@ -17,7 +17,7 @@ public class WebConfig {
 //                        .allowedOriginPatterns("http://223.194.154.236:3000") // React 앱이 실행되는 포트
                         .allowedOriginPatterns(
                                 "http://localhost:3000",
-                                "http://223.194.154.236:3000"
+                                "http://223.194.159.100:3000"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS") // 허용할 HTTP 메서드
                         .allowedHeaders("*") // 모든 헤더 허용
